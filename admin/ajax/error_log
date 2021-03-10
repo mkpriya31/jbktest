@@ -1,0 +1,45 @@
+[18-Apr-2020 06:22:20 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:71
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 71
+[18-Apr-2020 06:28:46 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:71
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 71
+[28-Apr-2020 02:16:14 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 21
+[28-Apr-2020 02:16:14 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 21
+[28-Apr-2020 02:16:14 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 21
+[28-Apr-2020 02:16:14 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 21
+[28-Apr-2020 10:23:21 UTC] PHP Parse error:  syntax error, unexpected '&&' (T_BOOLEAN_AND) in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 22
+[28-Apr-2020 10:35:21 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:101
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 101
+[24-May-2020 08:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:71
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 71
+[28-May-2020 13:28:26 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:71
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 71
+[05-Jun-2020 11:29:06 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:71
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 71
+[14-Jul-2020 09:53:42 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:71
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 71
+[14-Jul-2020 09:53:49 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:71
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 71
+[04-Aug-2020 08:25:36 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:92
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 92
+[04-Aug-2020 08:25:39 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/jbktestc/public_html/admin/ajax/collect_questions.php:92
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/ajax/collect_questions.php on line 92

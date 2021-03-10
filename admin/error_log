@@ -1,0 +1,32 @@
+[05-Jan-2021 00:42:18 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_array() on boolean in /home/jbktestc/public_html/admin/subject.php:251
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/subject.php on line 251
+[05-Jan-2021 00:42:24 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_array() on boolean in /home/jbktestc/public_html/admin/subject.php:251
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/subject.php on line 251
+[05-Jan-2021 00:42:26 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_array() on boolean in /home/jbktestc/public_html/admin/subject.php:251
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/subject.php on line 251
+[06-Jan-2021 12:13:48 UTC] PHP Fatal error:  Uncaught Error: Class 'PHPExcel_IOFactory' not found in /home/jbktestc/public_html/admin/question.php:104
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/question.php on line 104
+[06-Jan-2021 12:14:32 UTC] PHP Fatal error:  Uncaught Error: Class 'PHPExcel_IOFactory' not found in /home/jbktestc/public_html/admin/question.php:105
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/question.php on line 105
+[06-Jan-2021 12:22:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method PhpOffice\PhpSpreadsheet\Reader\Xls::setinputencoding() in /home/jbktestc/public_html/admin/question.php:106
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/question.php on line 106
+[06-Jan-2021 12:22:22 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method PhpOffice\PhpSpreadsheet\Reader\Xls::setinputencoding() in /home/jbktestc/public_html/admin/question.php:106
+Stack trace:
+#0 {main}
+  thrown in /home/jbktestc/public_html/admin/question.php on line 106
+[20-Jan-2021 04:13:06 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/jbktestc/public_html/admin/quiz-result.php on line 85
+[20-Jan-2021 04:13:09 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/jbktestc/public_html/admin/quiz-result.php on line 85
+[20-Jan-2021 04:13:44 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/jbktestc/public_html/admin/quiz-result.php on line 86
+[22-Jan-2021 06:48:43 UTC] PHP Warning:  mysqli::__construct(): (HY000/2002): No such file or directory in /home/jbktestc/public_html/includes/connect.php on line 14
