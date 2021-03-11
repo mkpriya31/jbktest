@@ -178,10 +178,10 @@ $('.nav-pills .nav-link').click(function(){
 					<p>Marks obtained by you <span id="score"></span> out of <span id="total"></span> </p>
 					<div class="btn btn-outline-primary shadow text-center view-answer">View Answer</div><br>
 					<div id="certificate" class="d-none"></div>
-					<!--<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('linkedin')">Linkedin</a>
+					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('linkedin')">Linkedin</a>
 					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('facebook')">Facebook</a>
 					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('twitter')">Twitter</a>
-					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('whatsapp')">Whatsapp</a>-->
+					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('whatsapp')">Whatsapp</a>
 				</div>
 				
 				<div id="quizanswer">
@@ -358,7 +358,7 @@ $('.qsubmit').click(function(){
 				$('#score').html(response.score);
 				$('#msg').html(response.msg);
 				$('#total').html(response.total);
-				$('#certificate').html('<img src="<?=$siteurl.'/images/certificate/'?>'+response.certificate+'">');
+				$('#certificate').html('<img src="<?=$siteurl.'images/certificate/'?>'+response.certificate+'">');
 				$('#quizresult').show();
 				$('#quizanswer').hide();
 				$('#answer').html(response.answer);
@@ -404,7 +404,7 @@ function socialsharingbuttons(social){
 	success: function(response) {
 	}
   });
-  var url = "<?=$siteurl.'/online'?>"; 
+  var url = "<?=$siteurl.'online'?>"; 
   params = {
 	   'url' : url,
 	   'title' : "JBKTEST QUIZ Score",
@@ -418,7 +418,7 @@ function socialsharingbuttons(social){
     button='http://www.facebook.com/share.php?u='+params.url+ '&t=' + params.title+'&picture='+params.img;
     break;
    case 'twitter':
-    button='https://twitter.com/share?url='+params.url+'&amp;text='+params.title+'&amp;hashtags='+params.tags;
+    button='https://twitter.com/share?url='+params.url+'&text='+params.title+'&hashtags='+params.tags;
     break;
    case 'whatsapp':
     if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -428,7 +428,7 @@ function socialsharingbuttons(social){
     }
     break;
    case 'linkedin':
-    button='http://www.linkedin.com/shareArticle?mini=true&amp;url='+params.url;
+    button='http://www.linkedin.com/shareArticle?mini=true&url='+params.url;
     break;
    default:
     break;
