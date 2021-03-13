@@ -276,9 +276,9 @@ function eventschema($description,$sitename,$logourl,$siteurl,$courseurl,$sdate)
 	
 	function create_certificate($name,$subject,$percentage,$message){
 		  $name_len=strlen($name);
-		  $occupation = strtoupper($subject);
-          if ($occupation) {
-          $font_size_occupation = 10;
+		  $subject = strtoupper($subject);
+          if ($subject) {
+          $font_size_subject = 10;
           }
 		  //designed certificate picture
           $image = "../images/certi.png";
@@ -300,11 +300,11 @@ function eventschema($description,$sitename,$logourl,$siteurl,$courseurl,$sdate)
           $origin_x = 170;
           $origin_y=200;
 
-          //we then set the x and y axis to fix the position of our text occupation
+          //we then set the x and y axis to fix the position of our text subject
           $origin1_x = 170;
           $origin1_y= 310;
 		  
-		  //we then set the x and y axis to fix the position of our text occupation
+		  //we then set the x and y axis to fix the position of our text subject
           $origin2_x = 250;
           $origin2_y= 370;
 		  
@@ -336,22 +336,22 @@ function eventschema($description,$sitename,$logourl,$siteurl,$courseurl,$sdate)
           }
 
           //font directory for name
-          $drFont = $_SERVER['DOCUMENT_ROOT']."/jbktest/fonts/developer.ttf";
+          $drFont = $_SERVER['DOCUMENT_ROOT']."/qa/fonts/developer.ttf";
 
-          // font directory for occupation name
-          $drFont1 = $_SERVER['DOCUMENT_ROOT']."/jbktest/fonts/Gotham-black.otf";
+          // font directory for subject name
+          $drFont1 = $_SERVER['DOCUMENT_ROOT']."/qa/fonts/Gotham-Black.ttf";
 
           //function to display name on certificate picture
           $text1 = imagettftext($createimage, $font_size, $rotation, $origin_x, $origin_y, $black,$drFont, $name);
 
           //function to display subject name on certificate picture
-          $text2 = imagettftext($createimage, $font_size_occupation, $rotation, $origin1_x+2, $origin1_y, $black, $drFont1, $subject);
+          $text2 = imagettftext($createimage, $font_size_subject, $rotation, $origin1_x+2, $origin1_y, $black, $drFont1, $subject);
 		  
 		  //function to display percentage on certificate picture
           $text3 = imagettftext($createimage, 16, $rotation, $origin3_x, $origin3_y, $black, $drFont, $percentage);
 		  
 		  //function to display message on certificate picture
-          $text4 = imagettftext($createimage, 30, $rotation, $origin2_x, $origin2_y, $red, $drFont, $message);
+          //$text4 = imagettftext($createimage, 30, $rotation, $origin2_x, $origin2_y, $red, $drFont, $message);
 
           imagepng($createimage,$output,3);
 		  return $filename;

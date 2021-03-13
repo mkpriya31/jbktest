@@ -4,7 +4,7 @@ include_once('includes/connect.php');
 $page='fresherzone';
 $title='Get Started | Take a Online Test';
 $metatitle="Practice Online Quiz | Take a Online Test - JavaByKiran";
-$metadescription="";
+$metadescription="Take a Quiz Exam and test your knowledge in various subjects";
 include('includes/header.php');
 $colo_box=['#0061ff','#ff0476','#02363d','#00bf6f','#0061ff','#ff0476','#02363d','#00bf6f','#0061ff','#ff0476','#02363d','#00bf6f','#0061ff','#ff0476','#02363d','#00bf6f'];
 ?>
@@ -178,10 +178,14 @@ $('.nav-pills .nav-link').click(function(){
 					<p>Marks obtained by you <span id="score"></span> out of <span id="total"></span> </p>
 					<div class="btn btn-outline-primary shadow text-center view-answer">View Answer</div><br>
 					<div id="certificate" class="d-none"></div>
-					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('linkedin')">Linkedin</a>
-					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('facebook')">Facebook</a>
-					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('twitter')">Twitter</a>
-					<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('whatsapp')">Whatsapp</a>
+					<div id="social-media" class="d-none">
+					<br/>
+					Share on:
+						<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('linkedin')"><img src="images/in.png" /></a>
+						<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('facebook')"><img src="images/fb.png" /></a>
+						<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('twitter')"><img src="images/tw.png" /></a>
+						<a href="javascript:void(0)" onclick="javascript:socialsharingbuttons('whatsapp')"><img src="images/wp.png" /></a>
+					</div>
 				</div>
 				
 				<div id="quizanswer">
@@ -358,7 +362,10 @@ $('.qsubmit').click(function(){
 				$('#score').html(response.score);
 				$('#msg').html(response.msg);
 				$('#total').html(response.total);
-				$('#certificate').html('<img src="<?=$siteurl.'images/certificate/'?>'+response.certificate+'">');
+				if(response.score>0){
+					$('#certificate').html('<img src="<?=$siteurl.'images/certificate/'?>'+response.certificate+'">');
+					$('#social-media').removeClass('d-none');
+				}
 				$('#quizresult').show();
 				$('#quizanswer').hide();
 				$('#answer').html(response.answer);
@@ -404,18 +411,22 @@ function socialsharingbuttons(social){
 	success: function(response) {
 	}
   });
-  var url = "<?=$siteurl.'online'?>"; 
+  var cert = $('#certificate img').attr('src');
+  filename = cert.split('/').pop().split('?')[0];
+  onlyfilename=filename.split('.').slice(0, -1).join('.');
+  certnum=onlyfilename.replace('certificate','');
+  var url = "<?=$siteurl.'online-exam?'?>"+certnum; 
   params = {
 	   'url' : url,
 	   'title' : "JBKTEST QUIZ Score",
 	   'img' : $('#certificate img').attr('src'),
       }; 
-	console.log(params); 
+ //console.log(params); 
  // var params = JSON.parse(params);
   var button= '';
   switch (social) {
    case 'facebook':
-    button='http://www.facebook.com/share.php?u='+params.url+ '&t=' + params.title+'&picture='+params.img;
+    button='http://www.facebook.com/share.php?u='+params.url;
     break;
    case 'twitter':
     button='https://twitter.com/share?url='+params.url+'&text='+params.title+'&hashtags='+params.tags;
@@ -428,7 +439,7 @@ function socialsharingbuttons(social){
     }
     break;
    case 'linkedin':
-    button='http://www.linkedin.com/shareArticle?mini=true&url='+params.url;
+    button='http://www.linkedin.com/sharing/share-offsite/?url='+params.url;
     break;
    default:
     break;

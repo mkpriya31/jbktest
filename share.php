@@ -38,12 +38,12 @@ function socialsharingbuttons(social){
     }
     break;
    case 'linkedin':
-    button='http://www.linkedin.com/shareArticle?mini=true&amp;url='+params.url;
+            window.open('https://www.linkedin.com/shareArticle?mini=true&url= https://www.jbktest.com/qa/survey.php?title=test', '_blank');
     break;
    default:
     break;
   }
-   window.open(button,'sharer','toolbar=0,status=0,width=648,height=395');
+   //window.open(button,'sharer','toolbar=0,status=0,width=648,height=395');
   return true;
  }
 </script>

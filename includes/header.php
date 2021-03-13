@@ -5,18 +5,12 @@ ini_set('allow_url_fopen',1);
 if( in_array( $_SERVER['REMOTE_ADDR'], array( '127.0.0.1', '::1' ) ) ) { // debug mode on localhost ('127.0.0.1' IP in IPv4 and IPv6 formats)
 	$siteurl="http://localhost/jbktest/";
 }else{
-	$siteurl='https://'.$_SERVER['HTTP_HOST'];
+	$siteurl='https://'.$_SERVER['HTTP_HOST'].'/qa/';
 }
 //include('functions.php');
 $sitename="Java By Kiran";
 $logourl= $siteurl."images/logojbk.png";
-
-
-//echo $_SERVER['REQUEST_URI'];
-
 ?>
-
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -30,7 +24,27 @@ $logourl= $siteurl."images/logojbk.png";
   <meta name="revisit-after" content="3">
   <meta name="author" content="Java By Kiran">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="article">
+  <?php if(isset($_SERVER['QUERY_STRING'])){?>
+  <meta property="og:title" content="Appreciation Certificate - JBKTEST">
+  <meta property="og:description" content="A complete bundle of classroom training. Each training is handled by a team of experienced professionals who has years of experience in this particular field.">
+  <meta property="og:image" content="https://jbktest.com/qa/images/certificate/<?="certificate".$_SERVER['QUERY_STRING'].'.png'?>">
+  <?php } else { ?>
+  <meta property="og:title" content="<?=$metatitle?>">
+  <meta property="og:description" content="<?=$metadescription?>">
+  <meta property="og:image" content="<?=$logourl?>">
+  <?php }?>
+  <meta property="og:site_name" content="JBKTEST">
+  <meta property="og:image:width" content="1366">
+  <meta property="og:image:height" content="768">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:creator" content="@jbktest" />
+  <meta name="twitter:site" content="@jbktest" />
+  <meta name="twitter:label1" content="Written by">
+  <meta name="twitter:data1" content="JBKTEST">
+  <meta name="twitter:label2" content="Est. reading time">
+  <meta name="twitter:data2" content="2 minutes">
   <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="vendor/css/style.css" rel="stylesheet">
