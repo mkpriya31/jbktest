@@ -40,7 +40,10 @@ $colo_box=['#0061ff','#ff0476','#02363d','#00bf6f','#0061ff','#ff0476','#02363d'
     					 	
     					 </a>		   		
     					<?php $i++;}} ?>
-    		</div>
+						<a class="nav-link border-bottom p-3 text-dark" data-toggle="pill"  href="#<?=str_replace(' ','-',"On Demand Test")?>" role="tab">
+    						<div class="link-box " style="background-color:<?= $colo_box[$i]?>">O</div>On Demand Test 					 	
+    					 </a>
+			</div>
     	</div>
 	  
 	  <div class="col-lg-10 bg-white  p-0 tab-content" id="v-pills-tabContent">
@@ -66,7 +69,7 @@ $colo_box=['#0061ff','#ff0476','#02363d','#00bf6f','#0061ff','#ff0476','#02363d'
 								$totalquestions=$quesres->num_rows;
 								?>
 									<div class="col-md-2 subject-list">
-										<a data-toggle="modal" data-id="<?=$topics['id']?>" class="showmodal text-dark"><p><?=$topics['topic']?></p>
+										<a data-toggle="modal" data-id="<?=$topics['id']?>" data-test="0" class="showmodal text-dark"><p><?=$topics['topic']?></p>
 											<!-- .' <span class="text-danger">('.$totalquestions.')</span>' -->
 											<div class="take_quiz_btn" style="background-color:<?= $colo_box[$i] ?>">Take Quiz</div>
 										</a>
@@ -75,6 +78,29 @@ $colo_box=['#0061ff','#ff0476','#02363d','#00bf6f','#0061ff','#ff0476','#02363d'
 						</div>	
                     </div>					
 					<?php $i++;}} ?>
+					<!--------- On DEmand Test --->
+					<div class="tab-pane fade show card border-0" id="<?=str_replace(' ','-',"On Demand Test")?>" role="tabpanel">
+						<h3 class="text-dark text-center card-header border-0 bg-white"><?="On Demand Test"?></h3>
+						<div class="row mb-1 topics-list card-body m-0">
+					<?php 
+				    $where1="WHERE status=1 ORDER by test_id desc";				
+	                $res=$sql->query("SELECT * FROM on_demand_test $where1");
+                    $total_demand=$res->num_rows;
+                    if($total_demand>0){ 
+                    while ($data_test=$res->fetch_assoc()){ //print_r($data_test); 						
+					?>
+					
+							<div class="col-md-2 subject-list">
+								<a data-toggle="modal" data-id="<?=$data_test['test_id']?>" data-test="1" class="showmodal text-dark">
+									<p><?=$data_test['test_name']?></p>
+									<!-- .' <span class="text-danger">('.$totalquestions.')</span>' -->
+									<div class="take_quiz_btn" style="background-color:<?= $colo_box[$i] ?>">Take Quiz</div>
+								</a>
+							</div>
+										
+					<?php }} ?>
+					</div>	
+                    </div>	
 	  </div>
     </div>
     <!-- /.row -->
@@ -128,6 +154,7 @@ $('.nav-pills .nav-link').click(function(){
 				    <h3 class="modal-title text-danger text-center p-0 mb-3" id="quizheading">Take a Quiz</h3> 
 				    <p class="mt-1 p-2 text-center text-secondary" id="quizcontent">How many questions you want to take</p>
 					<input type="hidden" id="topic_id" name="topic_id" value="" >
+					<input type="hidden" id="demand_test" name="demand_test" value="" >
 					<div class="form-group text-center">                   
 						 <input type="radio" name="count" value="10" checked="checked"> 10
 						 <input type="radio" name="count" value="20"> 20
@@ -225,8 +252,10 @@ $('.nav-pills .nav-link').click(function(){
   });
   $('.showmodal').click(function(){
 	  var topic_id=$(this).attr('data-id');
+	  var demand_test=$(this).attr('data-test');
 	  $('#take-quiz').modal('show');
 	  $(".modal-body #topic_id").val(topic_id);
+	  $(".modal-body #demand_test").val(demand_test);
 	  $('#quizanswer').hide();
 	  $('#quizcount').animate({opacity:"show"}, 500);
 	  $('#quizemail').hide();
@@ -282,7 +311,8 @@ $('.nav-pills .nav-link').click(function(){
        {
 		  var form = $('.quiz_form');
 		  post_data = {
-		   'topic_id' : $('#topic_id').val(), 
+		   'topic_id' : $('#topic_id').val(),
+		   'demand_test' :  $('#demand_test').val(),
 		   'count'  : $('input[name=count]:checked').val(),
 		   'name' : $('#name').val(),		   
 		   'email' : $('#emailid').val(),

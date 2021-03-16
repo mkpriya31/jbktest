@@ -336,10 +336,10 @@ function eventschema($description,$sitename,$logourl,$siteurl,$courseurl,$sdate)
           }
 
           //font directory for name
-          $drFont = $_SERVER['DOCUMENT_ROOT']."/qa/fonts/developer.ttf";
+          $drFont = $_SERVER['DOCUMENT_ROOT']."/jbktest/fonts/developer.ttf";
 
           // font directory for subject name
-          $drFont1 = $_SERVER['DOCUMENT_ROOT']."/qa/fonts/Gotham-Black.ttf";
+          $drFont1 = $_SERVER['DOCUMENT_ROOT']."/jbktest/fonts/Gotham-Black.ttf";
 
           //function to display name on certificate picture
           $text1 = imagettftext($createimage, $font_size, $rotation, $origin_x, $origin_y, $black,$drFont, $name);

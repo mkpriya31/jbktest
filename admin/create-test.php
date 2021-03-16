@@ -17,55 +17,37 @@ $status='';
 
 if($action=="delete")
 {
-	$where="where question_number =".$id." limit 1";
-	$res=$sql->query("delete from questions $where ");
-	$res=$sql->query("delete from choices $where ");
+	$where="where test_id =".$id." limit 1";
+	$res=$sql->query("delete from on_demand_test $where ");
 	if($res==true){$msg="delete";}
 }
 
 if($action=="enable")
 {
-	$where=" where question_number ='".$id."'";
+	$where=" where test_id ='".$id."'";
 	$status = 1;
-	$res2=$sql->query("Update questions set status='".$status."'  $where");
+	$res2=$sql->query("Update on_demand_test set status='".$status."'  $where");
 	$msg="enable";
 }
 
 if($action=="disable")
 {
-	$where=" where question_number ='".$id."'";
+	$where=" where test_id ='".$id."'";
 	$status = 0;
-	$res2=$sql->query("Update questions set status='".$status."'  $where");
+	$res2=$sql->query("Update on_demand_test set status='".$status."'  $where");
 	$msg="disable";
 }
 
 if(isset($_POST['submit'])&&($_POST['submit']=='add'))
 {
 	$field=$_POST;	
-	//echo "INSERT INTO `questions` (`subject_id`, `topic_id`, `question`, `explanation`, `status`) VALUES ('".$field['subject_id']."','".$field['topic_id']."','".$field['question']."','".$field['explanation']."',".$field['active'].")"; 
-	$is_reviewed=0;
-	$reviewed_by=0;
-	if($_SESSION['user_role']==3){
-		$field['active']=0;
-	}
-	if($_SESSION['user_role']!=3){
-		$is_reviewed=$field['is_reviewed'];
-		$reviewed_by=$_SESSION['id'];
-	}
+	$test_name=$_POST['test_name'];
+    $subjects=implode(",",$_POST['subjects']);
+    $topics=implode(",",$_POST['topics']);
 	
-	$res=$sql->query("INSERT INTO `questions` (`subject_id`, `topic_id`, `question`, `explanation`, `created_at`,`created_by`, `modified_by`, `level`, `reviewed_by`,`is_reviewed`,`status`) VALUES ('".$field['subject_id']."','".$field['topic_id']."','".mysqli_real_escape_string($sql,$field['question'])."','".mysqli_real_escape_string($sql,$field['explanation'])."',NOW(),".$_SESSION['id'].",0,0,".$reviewed_by.",".$is_reviewed.",".$field['active'].")");
+	$res=$sql->query("INSERT INTO `on_demand_test` (`test_name`, `subjects`, `topics`, `created_at`,`created_by`, `modified_by`) VALUES ('".$test_name."','".$subjects."','".$topics."',NOW(),".$_SESSION['id'].",0)");
 	$question_number=$sql->insert_id;
-	$choices = $field['choice'];
-	foreach($choices as $choice=>$value){
-		if($field['correct_answer']==$choice+1){
-			$is_correct=1;
-		}else {
-			$is_correct=0;
-		}
 		
-		$res=$sql->query("INSERT INTO `choices` (`question_number`, `is_correct`, `text`, `created_at`,`created_by`, `modified_by`, `status`) VALUES ('".$question_number."','".$is_correct."','".mysqli_real_escape_string($sql,$value)."',NOW(),".$_SESSION['id'].",0,".$field['active'].")");
-	}
-	
 	if($res==true){$msg="added";}
 }
 
@@ -90,221 +72,77 @@ if($msg!="")
             <?php if($action=='add'||$action=='edit'){ ?> 
 				<div class="row">
                 	<div class="col-sm-12">
-                        <form method="post" action="" class="form-horizontal" id="frm_jbk" name="frm_jbk" enctype="multipart/form-data">
+                        <form method="post" action="" class="form-horizontal registration-form" id="frm_jbk" name="frm_jbk" enctype="multipart/form-data">
+						<fieldset>
+                        <div class="form-top">
+                            <div class="form-top-left">
+                                <h3>Specify Test Name</h3>                             
+                            </div>
+                        </div>
+                        <div class="form-bottom clearfix">
+                            <div class="form-group">
+							   <label for="inputEmail3" class="col-sm-2 control-label">Enter Test Name
+					           <span class="required">*</span>:</label>
+				     		   <div class="col-sm-7">
+                                 <input type="text" class="form-control" placeholder="Enter Test Name" name="test_name" id="test_name">
+							   </div>
+                            </div>
+
+                            <div class="form-group pull-right d-clear">
+                            <button type="button" class="btn btn-next" data-value="step1">Next</button>
+							</div>
+                        </div>
+						</fieldset>
+						<fieldset>
+                        <div class="form-top">
+                            <div class="form-top-left">
+                                <h3><span>Select Subject</h3>
+                                <p id="entered_test_name"></p>
+                            </div>
+                        </div>
 						
-							<div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Select Subject 
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-5">
-                              	 <select name="subject_id" class="form-control" required id="subject_id">
-									<option value=''>--Please Select Subject--</option>
-									<?php 
-										if($subquery->num_rows >= 1 ){
-											while($rows =  $subquery->fetch_assoc()){ ?>
-												<option value="<?=$rows['id']?>" <?=((isset($question['subject_id'])&&($rows['id']==$question['subject_id']))?'selected':'')?>><?=$rows['subject_name']?></option>
-									<?php	} 											
-										}
-									?>
-										
-								 </select>
-					           </div>
-					         </div> 
-							
-							<div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Select Topic
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-5">
-                              	 <select name="topic_id" class="form-control" required id="topic_id">
-									<option value=''>--Please Select Topic--</option>
-                                    <?=$topic?>									
-								 </select>
-					           </div>
-					         </div> 							 
-							 
-					         <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Question 
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-8">
-							      <div id="questiontext" class="hidden"><?=((isset($question['question']))?$question['question']:'')?></div>
-								  <textarea class="form-control questioneditor" name="question" id='question'></textarea>  
-								  <div id="questionerr" class="text-danger"></div> 
-					           </div>
-					         </div> 
-							 							 
-							<? //print_R($choices);?>
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Choice #1 
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-5">
-                              	  <input type="text" class="form-control" name="choice[<?=((isset($choices[0]['id']))?$choices[0]['id']:'')?>]" value="<?=((isset($choices[0]['text']))?stripslashes($choices[0]['text']):'')?>" required>
-					           </div>
-					         </div>   
-							 
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Choice #2
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-5">
-                              	  <input type="text" class="form-control" name="choice[<?=((isset($choices[1]['id']))?$choices[1]['id']:'')?>]" value="<?=((isset($choices[1]['text']))?stripslashes($choices[1]['text']):'')?>" required>
-					           </div>
-					         </div>  
-
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Choice #3 </label>
-				     		   <div class="col-sm-5">
-                              	  <input type="text" class="form-control" name="choice[<?=((isset($choices[2]['id']))?$choices[2]['id']:'')?>]" value="<?=((isset($choices[2]['text']))?stripslashes($choices[2]['text']):'')?>">
-					           </div>
-					         </div>  	
-
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Choice #4</label>
-				     		   <div class="col-sm-5">
-                              	  <input type="text" class="form-control" name="choice[<?=((isset($choices[3]['id']))?$choices[3]['id']:'')?>]" value="<?=((isset($choices[3]['text']))?stripslashes($choices[3]['text']):'')?>" >
-					           </div>
-					         </div>  	
-							 
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Choice #5</label>
-				     		   <div class="col-sm-5">
-                              	  <input type="text" class="form-control" name="choice[<?=((isset($choices[4]['id']))?$choices[4]['id']:'')?>]" value="<?=((isset($choices[4]['text']))?stripslashes($choices[4]['text']):'')?>">
-					           </div>
-					         </div>  
-							 
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Correct Answer
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-5">
-                              	  <?php $i=1; ?>
-								  <select class="form-control" name="correct_answer" required>
-									<option value=''>--Please Select Answer--</option>
-                                  	<?php 
-									while($i<6){ ?>
-										<option value="<?=$i?>" <?=((isset($correct_answer)&&($i==$correct_answer))?'selected':'')?>><?=$i?></option>
-									<?php $i++; }
-									?>
-                                  </select>
-					           </div>
-					         </div>  
-							 
-							 
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Explanation</label>
-				     		   <div class="col-sm-8">                              	  
-								  <div id="explanationtext" class="hidden"><?=((isset($question['explanation']))?$question['explanation']:'')?></div>
-								  <textarea class="form-control explanationeditor" name="explanation" id='explanation'></textarea>  
-								  <div id="explanationerr" class="text-danger"></div> 
-					           </div>
-					         </div>
-                             <?php 
-							 if($_SESSION['user_role']!=3){ ?>	
-                             <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Status 
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-2">
-                              	  <select class="form-control" name="active">
-                                  	<option value="1" <?=((isset($question['status'])&&$question['status']==1)?'selected':'')?>>Active</option>
-                                    <option value="0" <?=((isset($question['status'])&&$question['status']==0)?'selected':'')?>>In-Active</option>
-                                  </select>
-					           </div>
-					         </div>	
-
-							 <div class="form-group">
-					           <label for="inputEmail3" class="col-sm-2 control-label">Review Status 
-					           <span class="required">*</span></label>
-				     		   <div class="col-sm-2">
-                              	  <select class="form-control" name="is_reviewed">
-                                  	<option value="1" <?=((isset($question['is_reviewed'])&&$question['is_reviewed']==1)?'selected':'')?>>Approved</option>
-                                    <option value="0" <?=((isset($question['is_reviewed'])&&$question['is_reviewed']==0)?'selected':'')?>>Waiting for Approval</option>
-									<option value="-1" <?=((isset($question['is_reviewed'])&&$question['is_reviewed']==-1)?'selected':'')?>>Not Approved</option>
-                                  </select>
-					           </div>
-					         </div>	
-                             <?php }  ?> 							 
-					         <div class="box-footer">
-					              <label for="inputPassword3" class="col-sm-2 control-label">&nbsp;</label>
-			                      <div class="col-sm-10">
-					              <?php if($action=='add'){ ?>
-					                 <button type="submit" name="submit" class="btn btn-info" value="add" >Submit</button>
-					              <?php } if($action=='edit'){?>
-					                 <button type="submit" name="submit" class="btn btn-info" value="Update" >Update</button>                                  <?php } ?>
-					                 <button type="button" class="btn btn-primary" onclick='return homepage()' >Cancel</button>
-			                     </div>
-     	                     </div><!-- /.box-footer -->
+                        <div class="form-bottom clearfix">
+							<div class="pull-left col-sm-12">
+							<h5> Select all <input type="checkbox" id="select_all" /></h5>
+							</div>
+                            <div class="form-group">
+                            <?php 
+								$where=" WHERE active=1 ORDER BY id DESC";
+								$subquery = $sql->query("SELECT * FROM subject $where");
+								if($subquery->num_rows >= 1 ){
+								while($rows =  $subquery->fetch_assoc()){ ?>
+								<div class="col-sm-4 p-1">
+									 <label class = "checkbox-inline">
+							    	 <input name="subjects[]" type="checkbox" class="checkbox" value="<?=$rows['id']?>" <?=((isset($question['subject_id'])&&($rows['id']==$question['subject_id']))?'checked':'')?> data-value="<?=$rows['subject_name']?>" ><?=$rows['subject_name']?>
+									 </label>
+								</div>
+							<?php	} } ?>
+                            </div>
+							<button type="button" class="btn btn-previous">Previous</button>
+                            <div class="form-group pull-right d-clear">
+                            <button type="button" class="btn btn-next" data-value="step2">Next</button>
+							</div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-top">
+                            <div class="form-top-left">
+                                <h3>Select Topics</h3>
+								<p id="entered_test_name_subject"></p>
+                            </div>
+                        </div>
+                        <div class="form-bottom">
+                            <div class="form-group">
+								<div id="alltopics"></div>
+                            </div>
+                            <button type="button" class="btn btn-previous">Previous</button>
+                            <button type="submit" name="submit" value="add" class="btn pull-right">Submit</button>
+                        </div>
+                    </fieldset>
 	          			</form>                    	
                     </div>
                 </div>
-            <?php }elseif($action=='upload'){ ?>
-				<p class="text-center"><?=$status?></p>
-				<form method="post" class="form-horizontal" id="frm_jbk_upload" name="frm_jbk_upload" enctype="multipart/form-data">
-					<div class="form-group">
-					    <label for="inputEmail3" class="col-sm-2 control-label">Upload XLS/XLSX File</label>
-				     	<div class="col-sm-8">                              	  
-							<input type="file" name="fileupload" id="fileupload" class="form-control" accept=".xls,.xlsx" required>
-							<div id="fileuploaderr" class="text-danger"></div> 
-					    </div>
-					</div>
-					<div class="box-footer">
-					    <label for="inputPassword3" class="col-sm-2 control-label">&nbsp;</label>
-			            <div class="col-sm-10">
-					        <button type="submit" name="submit" id="uploadsubmit" class="btn btn-info" value="upload" >Submit</button>
-							<button type="button" class="btn btn-primary" onclick='return homepage()' >Cancel</button>
-			            </div>
-     	            </div><!-- /.box-footer -->
-				</form>
-			<?php }elseif($action=='disapprove'){ ?>
-				<p class="text-center"><?=$status?></p>
-				<form method="post" action="" class="form-horizontal" id="frm_jbk" name="frm_jbk" enctype="multipart/form-data">
-						
-					<div class="form-group">
-					<label for="inputEmail3" class="col-sm-2 control-label">Select Subject 
-					<span class="required">*</span></label>
-				    <div class="col-sm-5">
-						<select name="subject_id" class="form-control" required id="subject_id">
-							<option value=''>--Please Select Subject--</option>
-							<?php 
-							if($subquery->num_rows >= 1 ){
-							while($rows =  $subquery->fetch_assoc()){ ?>
-							<option value="<?=$rows['id']?>" <?=((isset($question['subject_id'])&&($rows['id']==$question['subject_id']))?'selected':'')?>><?=$rows['subject_name']?></option>
-						<?php	} 											
-							}
-					    ?>
-										
-						</select>
-					</div>
-					</div> 
-							
-				    <div class="form-group">
-					    <label for="inputEmail3" class="col-sm-2 control-label">Select Topic
-					    <span class="required">*</span></label>
-				     	<div class="col-sm-5">
-							<select name="topic_id" class="form-control" required id="topic_id">
-							<option value=''>--Please Select Topic--</option>
-							<?=$topic?>									
-							</select>
-					    </div>
-					</div> 
-					
-					<div class="form-group">
-					    <label for="inputEmail3" class="col-sm-2 control-label">Option
-					    <span class="required">*</span></label>
-				     	<div class="col-sm-5">
-						 <label class="radio-inline">
-							<input type="radio" name="option" value="1" checked>Uploaded
-						 </label>
-						 <label class="radio-inline">
-						  <input type="radio" name="option" value="0">All
-						 </label>
-					    </div>
-					</div> 
-					
-					<div class="box-footer">
-					    <label for="inputPassword3" class="col-sm-2 control-label">&nbsp;</label>
-			            <div class="col-sm-10">
-					        <button type="submit" name="submit" class="btn btn-info" value="disapprove" >Disapprove</button>
-							<button type="button" class="btn btn-primary" onclick='return homepage()' >Cancel</button>
-			            </div>
-     	            </div><!-- /.box-footer -->
-				</form>
-			<?php }else{ ?>
+            <?php }else{ ?>
                 <div class="row">
                 	<?php if(isset($_REQUEST['msg'])&&$_REQUEST['msg']!=''){ 
 				        if($_REQUEST['msg']=='added')
@@ -326,7 +164,7 @@ if($msg!="")
                         </div>
 				  <?php  } ?>
 				    <div class="col-sm-12 mb-3">						
-                        <a href="question?action=add" class="small-tile blue-back pull-right ">
+                        <a href="create-test?action=add" class="small-tile blue-back pull-right ">
                             <h5 class="btn btn-primary "><i class="fa fa-plus pr-2"></i>Create Test</h5>
                         </a>
 						
@@ -342,31 +180,58 @@ if($msg!="")
                                 </div>
                                 <!-- /.panel-heading -->
                                 <div class="panel-body">
-								<?php if($_SESSION['user_role']!=3){ ?>
-									<!-- Custom Filter -->
-								    <table class="pull-right">
-									 <tr>
-									   <td>
-										 <label >Search By Title:&nbsp;&nbsp;<input type='text' id='searchByTitle' placeholder='Enter Title' style="border: 2px solid #000" value=""></label>
-									   </td>									   
-									 </tr>
-								    </table>
-								<?php } ?>
-                                    <table width="100%" class="dataTable display table table-striped table-hover">
+								
+                                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                                         <thead class="background-dark">
                                             <tr>
+												<th class="text-center">S.No</th>
                                                 <th class="text-center">Test Name</th>
 												<?php 
 												if($_SESSION['user_role']!=3){ ?>
 												<th class="text-center">Created By</th>
-												<th class="text-center">Modified By</th>
 												<th class="text-center">Created at</th>
-												<th class="text-center">Modified at</th>
                                                 <th class="text-center">Status</th>
 												<?php } ?>											
                                                 <th class="text-center">Action</th>
                                             </tr>
-                                        </thead>                          
+                                        </thead>    
+										<tbody>                                    
+                                        <?php 
+                                        $result = $sql->query("SELECT * FROM on_demand_test ORDER by test_id desc");
+                                        $total_subject=$result->num_rows;
+                                        if($total_subject>0){
+                                          $i=1;
+                                           while ($data=$result->fetch_assoc()) { //print_r($data); ?>
+                                            <tr class="odd gradeX">
+                                                <td class="text-center"><?=$i?></td>
+                                                <td><?php echo $data['test_name']; ?></td>
+												<?php
+												$where="WHERE su.created_by=".$data['created_by'];
+												$res=$sql->query("SELECT u.name,ur.role FROM `users` u JOIN subject su on u.id=su.created_by JOIN user_role ur on u.user_role=ur.id $where");
+												$created_by=$res->fetch_array();
+												?>
+											    <td class="text-center"><?=(isset($created_by['role'])?($created_by['name']." (".$created_by['role'].")"):''); ?></td>
+												
+												<td class="text-center"><?php echo date('d M Y, H:ia', strtotime($data['created_at'])); ?></td>
+												
+                                                <td class="text-center">
+                                                <?php
+													$enable="create-test?id=".$data['test_id']."&action=enable";
+													$disable="create-test?id=".$data['test_id']."&action=disable";
+													if($data['status']=='1') { echo "<span class='active'><a href=".$disable." style='color:#090 !important;'><span class='glyphicon glyphicon-ok-sign'></span></a></span>"; } 
+													else { echo "<span class='deactive'><a href=".$enable." style='color:#F00 !important;'><span class='glyphicon glyphicon-remove-sign'></span></a></span>"; } 				
+												 ?>
+                                                </td>
+                                                <td class="text-center">
+                                                                                                        
+                                                    <a href="create-test?id=<?=$data['test_id']?>&action=delete"><i class="fa fa-trash"></i></a>
+                                                </td>
+                                            </tr>                                        
+                                        <?php 
+                                            $i++;
+                                            }
+                                        }?>
+                                        </tbody>		
                                     </table>                                
                                 </div>
                                 <!-- /.panel-body -->
@@ -386,31 +251,116 @@ if($msg!="")
 
 <?php include('includes/footer.php')?>
 <script>
-$(document).on('change', '#subject_id', function(){ 
-  var subject_id = $(this).val(); 
-  post_data = {
-   'id' : subject_id, 
-   'action': 'gettopics',
- };
- data = $(this).serialize() + "&" + $.param(post_data);			
-	
-	$.ajax({
-		 type: "POST",
-		 dataType: "json",
-		 url: "process-topics",
-		 data: data,
-		 success: function(response) {			 
-			 if(response.status=="success"){
-				$("#topic_id").html(response.topic); 
-			 }
-	  }
-	});
-	return true;  
-});  
-
 function homepage()
 {		
 window.location.href ="create-test";
 return false;
 }
+$(document).ready(function () {
+	 $('#select_all').on('click',function(){
+        if(this.checked){
+            $('.checkbox').each(function(){
+                this.checked = true;
+            });
+        }else{
+             $('.checkbox').each(function(){
+                this.checked = false;
+            });
+        }
+    });
+    
+    $('.checkbox').on('click',function(){
+        if($('.checkbox:checked').length == $('.checkbox').length){
+            $('#select_all').prop('checked',true);
+        }else{
+            $('#select_all').prop('checked',false);
+        }
+    });
+
+    $('.registration-form fieldset:first-child').fadeIn('slow');
+	
+	$('.registration-form input[type="text"]').on('focus', function () {
+        $(this).removeClass('input-error');
+    });
+    // next step
+    $('.registration-form .btn-next').on('click', function () {
+		var parent_fieldset = $(this).parents('fieldset');
+        var next_step = true;
+		$step = $(this).attr('data-value')
+		
+		if($step=='step1'){
+			parent_fieldset.find('input[type="text"],input[type="email"]').each(function () {
+				if ($(this).val() == "") {
+					$(this).addClass('input-error');
+					next_step = false;
+				} else {
+					$(this).removeClass('input-error');
+				}
+			});
+		}
+		if($step=='step2'){
+			if(parent_fieldset.find(".checkbox:checkbox:checked").length>0){
+				var data = { 'subjects[]' : [], 'action': 'gettopicsfortest',};
+				$(".checkbox:checkbox:checked").each(function() {
+				   data['subjects[]'].push($(this).val());
+				});
+				
+				$.ajax({
+					 type: "POST",
+					 dataType: "json",
+					 url: "process-topics",
+					 data: data,
+					 success: function(response) {			 
+						 if(response.status=="success"){
+							$("#alltopics").html(response.topic); 
+						 }
+				  }
+				});
+				next_step = true;
+			}else{
+				next_step = false;
+			}
+		}
+		
+        if (next_step) {
+            parent_fieldset.fadeOut(400, function () {
+                $(this).next().fadeIn();
+				if($step=='step1'){
+					$('#entered_test_name').html('Test Name:'+$('#test_name').val());
+				}else{
+					var subjectsname='';
+				   $(".checkbox:checkbox:checked").each(function() {
+						subjectsname=subjectsname+$(this).attr('data-value')+',';
+					});
+					console.log(data);
+					$('#entered_test_name_subject').html('<b>Test Name:</b> '+$('#test_name').val()+'<br/> <b>Subject:</b> '+subjectsname);
+				}
+            });
+        }
+
+    });
+
+    // previous step
+    $('.registration-form .btn-previous').on('click', function () {
+        $(this).parents('fieldset').fadeOut(400, function () {
+			
+            $(this).prev().fadeIn();
+        });
+    });
+
+    // submit
+    $('.registration-form').on('submit', function (e) {
+        $(this).find('input[type="text"],input[type="email"]').each(function () {
+            if ($(this).val() == "") {
+                e.preventDefault();
+                $(this).addClass('input-error');
+            } else {
+                $(this).removeClass('input-error');
+            }
+        });
+
+    });
+
+   
+});
 </script>

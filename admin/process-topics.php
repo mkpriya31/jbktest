@@ -28,6 +28,32 @@ switch($action){
 		 }
 		 $output=json_encode(array('status'=>"success",'topic'=>$topic));
 		 break;	
+	case "gettopicsfortest":
+		 if(!empty($_REQUEST['subjects'])){
+			 $subjects=$_REQUEST['subjects'];
+			 $topic='';
+			 foreach($subjects as $sub=>$val){
+				 $wheresubject="where id =".$val;
+				 $res=$sql->query("SELECT * FROM subject $wheresubject");
+				 $subject=$res->fetch_array();
+				 
+				 $where="where subject_id =".$val." ORDER by id asc";		
+				 $res=$sql->query("SELECT * FROM topics $where");
+				 $numrows=$res->num_rows;
+				 $topic.='<div class="col-sm-12 p-4 text-center font-weight-bold">'.$subject['subject_name'].'</div>';
+				 if($numrows>0){
+					 while($topics=$res->fetch_assoc()){
+						$topic.='<div class="col-sm-4 p-1">
+									 <label class = "checkbox-inline">
+							    	 <input name="topics[]" type="checkbox" class="topic-checkbox" value="'.$topics['id'].'">'.$topics['topic'].'
+									 </label>
+								</div>';
+					 }
+				 }
+			 }
+		 }
+		 $output=json_encode(array('status'=>"success",'topic'=>$topic));
+		 break;	
 }
 die($output);
 

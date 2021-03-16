@@ -47,3 +47,14 @@
   background: #ff9900 none repeat scroll 0 0;
 }
 .panel{ border:0; border-radius: 0; box-shadow:none; margin-bottom:0;}
+.form-top {
+    overflow: hidden;
+    padding: 0 25px 15px 25px;
+    background: #26A69A;
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    border-radius: 4px 4px 0 0;
+    text-align: left;
+    color: #fff;
+    transition: opacity .3s ease-in-out;
+}

@@ -41,21 +41,21 @@
                         </li>
 						<?php  if(($_SESSION['user_role']=='2') || ($_SESSION['user_role']=='1' )){ ?>
                         <li>
-                            <a href="users"><i class="fa fa-user"></i> Manage Users</a>
+                            <a href="users" <?=($page=='users')?'class="active"':''?>><i class="fa fa-user"></i> Manage Users</a>
                         </li>
 						<?php }?>	
 						<?php 
 						if($_SESSION['user_role']=='1'){?>   
 						<li>
-							<a href="subject"><i class="fa fa-file"></i> Manage Subject</a>						
+							<a href="subject" <?=($page=='subject')?'class="active"':''?>><i class="fa fa-file"></i> Manage Subject</a>						
 						</li>
 						<?php } ?>						
                         					
 						<li class="dropdown">
-							<a href="question"><i class="fa fa-question-circle"></i> Manage Question</a>
+							<a href="question" <?=($page=='question')?'class="active"':''?>><i class="fa fa-question-circle"></i> Manage Question</a>
 						</li>
 						<li class="dropdown">
-							<a href="question"><i class="fa fa-check"></i> Create Test</a>
+							<a href="create-test" <?=($page=='create-test')?'class="active"':''?>><i class="fa fa-check"></i> Create Test</a>
 						</li>
 						<?php 
 						if(($_SESSION['user_role']=='2') || ($_SESSION['user_role']=='1' )){?>                  

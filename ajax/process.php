@@ -11,19 +11,51 @@ if($_POST)
 	$from_email ="javabykiran@gmail.com";
 	$count=isset($_POST['count'])?$_POST['count']:'';
 	$topic=isset($_POST['topic_id'])?$_POST['topic_id']:'';
+	$demand_test=isset($_POST['demand_test'])?$_POST['demand_test']:'';
 	$name=isset($_POST['name'])?$_POST['name']:'';
 	$email=isset($_POST['email'])?$_POST['email']:'';
 	
 	if($_POST['type']=='start'){
-		$where="WHERE topic_id=$topic and status=1 and is_reviewed=1 ORDER by RAND() LIMIT $count";	
+		if($demand_test==1){
+			$where_test="WHERE test_id=$topic";
+			$get_topics_for_test=$sql->query("SELECT * FROM on_demand_test $where_test");
+			$topics_for_test=$get_topics_for_test->fetch_array();			
+			$test_topics_array=explode(",",$topics_for_test['topics']);
+			$topics_str="";
+			$i=0;
+			$num_topics=count($test_topics_array);
+			foreach($test_topics_array as $tt){
+			if($i==0){
+					$topics_str="(";
+			}else{
+				$topics_str.=" OR ";
+			}	
+				
+			$topics_str.="topic_id=".$tt;
+			$i++;
+			if($i==$num_topics){
+				$topics_str.=")";
+			}
+				
+			}
+			$where="WHERE $topics_str and status=1 and is_reviewed=1 ORDER by RAND() LIMIT $count";	
+		}else{
+			$where="WHERE topic_id=$topic and status=1 and is_reviewed=1 ORDER by RAND() LIMIT $count";	
+		}
+		//echo "SELECT * FROM questions $where";
 		$res=$sql->query("SELECT * FROM questions $where");
 		$total=$res->num_rows;
 		$i=1;
 		$v=0;
-		$where="WHERE id=$topic";
-		$top=$sql->query("SELECT * FROM topics $where");
-		$topic=$top->fetch_array();
-		$ques.='<h3 class="modal-title text-danger text-center p-0  mb-3" id="quizheading">'.$topic['topic'].' Quiz</h3>';
+		if($demand_test==1){
+			$quiz_topic=$topics_for_test['test_name'];
+		}else{
+			$where="WHERE id=$topic";
+			$top=$sql->query("SELECT * FROM topics $where");
+			$topic=$top->fetch_array();
+			$quiz_topic=$topic['topic'];
+		}
+		$ques.='<h3 class="modal-title text-danger text-center p-0  mb-3" id="quizheading">'.$quiz_topic .' Quiz</h3>';
 		if($total>0){
 			unset($_SESSION['rquestions']);
 			while($questions=$res->fetch_assoc()){ 
@@ -124,35 +156,57 @@ if($_POST)
 			//unset($_SESSION['rquestions']);
 			$result['marks']=$score;
 			$result['total']=$count;
-			$result['topic_id']=$topic;
-			$gtop=$sql->query("SELECT * FROM topics WHERE id=".$result['topic_id']);
-			$gettopic=$gtop->fetch_array();
 			
-			$gsub=$sql->query("SELECT * FROM subject WHERE id=".$gettopic['subject_id']);
-			$getsubject=$gsub->fetch_array();
+			if($demand_test==1){
+				$where_test="WHERE test_id=$topic";
+				$get_topics_for_test=$sql->query("SELECT * FROM on_demand_test $where_test");
+				$topics_for_test=$get_topics_for_test->fetch_array();
+				$result['test_id']=$topic;
+				$test_topic=$topics_for_test['test_name'];
+			}else {
+				$result['topic_id']=$topic;
+				$gtop=$sql->query("SELECT * FROM topics WHERE id=".$result['topic_id']);
+				$gettopic=$gtop->fetch_array();
+				
+				$gsub=$sql->query("SELECT * FROM subject WHERE id=".$gettopic['subject_id']);
+				$getsubject=$gsub->fetch_array();
+				$test_topic=$gettopic['topic'].' - '.$getsubject['subject_name'];
+			}
 			$percentage=($score/$count)*100;
-			$certificate = create_certificate($name,$gettopic['topic'].' - '.$getsubject['subject_name'],$percentage,'Good Job');
+			$certificate = create_certificate($name,$test_topic,$percentage,'Good Job');
 			$output = json_encode(array('type'=>'success', 'score' => $score, 'msg' => $msg, 'total' => $count, 'answer'=> $answer ,'certificate' => $certificate));
 		}else {
 			$result['marks']=$score;
-			$result['total']=$count;	
-			$result['topic_id']=$topic;
+			$result['total']=$count;
+			if($demand_test==1){
+				$result['test_id']=$topic;
+			}
+			else{
+				$result['topic_id']=$topic;
+			}
 			$msg="<h3 class='text-danger text-center'>Sorry!!!</h3><p>You have Failed. Please try again. you need grooming on this topic. Please <a href='https://javabykiran.com'>join us</a> for detailed training on this. </p>";
 			$output = json_encode(array('type'=>'error', 'score' => $score, 'msg' => $msg, 'total' => $count, 'answer'=> $answer));
 	    }
 		
-		$res=$sql->query("INSERT INTO `quiz_results` (`name`,`email`, `result`) VALUES ('".$name."','".$email."','".json_encode($result)."')");
+		$res=$sql->query("INSERT INTO `quiz_results` (`name`,`email`, `result`, `is_demand_test`) VALUES ('".$name."','".$email."','".json_encode($result)."',".$demand_test.")");
 		$result_id=$sql->insert_id;
 
-		$gtop=$sql->query("SELECT * FROM topics WHERE id=".$result['topic_id']);
-		$gettopic=$gtop->fetch_array();
-		
-		$gsub=$sql->query("SELECT * FROM subject WHERE id=".$gettopic['subject_id']);
-		$getsubject=$gsub->fetch_array();
+		if($demand_test==1){
+			$result['test_id']=$topic;
+			$test_topic=$topics_for_test['test_name'];
+		}else {
+			$result['topic_id']=$topic;
+			$gtop=$sql->query("SELECT * FROM topics WHERE id=".$result['topic_id']);
+			$gettopic=$gtop->fetch_array();
+				
+			$gsub=$sql->query("SELECT * FROM subject WHERE id=".$gettopic['subject_id']);
+			$getsubject=$gsub->fetch_array();
+			$test_topic=$gettopic['topic'].' - '.$getsubject['subject_name'];
+		}
 		
 		
 		$msg = "<h3 style='text-align:center; color: #252733 !important;font-size: 26px;font-weight: 600;border-bottom: 1px dashed #ccc;padding: 0.5rem !important;'>Result</h3><div style='text-align:center'>".$msg."<p>Marks obtained by you <span>".$score."</span> out of <span>".$count."</span> </p></div>
-		<div style='text-align:center'> ".$name.", Please check your answer.</div><br/><div class='text-center font-weight-bold'>".$getsubject['subject_name'].'->'.$gettopic['topic']."</div><br/><img src='https://www.jbktest.com/images/certificate/'".$certificate."><br/><div style='color: #007bff;  background-color: transparent; background-image: none; border-color: #007bff; padding: .375rem .75rem; font-size: 0.75rem; text-align:center'><a href='https://www.jbktest.com/online-exam?id=".$result_id."&view=answer'>View Answer</a></div>";
+		<div style='text-align:center'> ".$name.", Please check your answer.</div><br/><div class='text-center font-weight-bold'>".$test_topic."</div><br/><img src='https://www.jbktest.com/images/certificate/'".$certificate."><br/><div style='color: #007bff;  background-color: transparent; background-image: none; border-color: #007bff; padding: .375rem .75rem; font-size: 0.75rem; text-align:center'><a href='https://www.jbktest.com/online-exam?id=".$result_id."&view=answer'>View Answer</a></div>";
 		$sub = "Quiz Results - JBKTEST";
 		$head = "MIME-Version: 1.0" . "\r\n";
 		$head .= "Content-type:text/html;charset=iso-8859-1" . "\r\n";

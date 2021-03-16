@@ -77,11 +77,20 @@ if($msg!="")
                                                 <td class="text-center"><?=$i?></td>
                                                 <td class="text-center"><?php echo $data['email']; ?></td>
 												<?php
-													$where="WHERE id=".$quizres['topic_id'];
-													$top=$sql->query("SELECT * FROM topics $where");
-													$topic=$top->fetch_array();
+													if($data['is_demand_test']==1){
+														$where="WHERE test_id=".$quizres['test_id'];
+														$top=$sql->query("SELECT * FROM on_demand_test $where");
+														$topic=$top->fetch_array();
+														$topic_name=$topic['test_name'];
+													}else{
+														$where="WHERE id=".$quizres['topic_id'];
+														$top=$sql->query("SELECT * FROM topics $where");
+														$topic=$top->fetch_array();
+														$topic_name=$topic['topic'];
+													}	
+													
 												?>
-												<td class="text-center"><?=(isset($topic['topic'])?$topic['topic']:'')?></td>
+												<td class="text-center"><?=(isset($topic_name)?$topic_name:'')?></td>
 												<td class="text-center"><?php echo $quizres['marks']; ?></td>
 												<td class="text-center"><?php echo $quizres['total']; ?></td>
 												<td class="text-center"><?php echo date('d M Y, H:i a', strtotime($data['taken_at'])); ?></td>
