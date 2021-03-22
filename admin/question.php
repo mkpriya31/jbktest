@@ -11,7 +11,7 @@ $id= isset($_REQUEST['id'])?$_REQUEST['id']:'';
 $question=array();
 $choices=array();
 $is_correct=0;
-$correct_answer=0;
+$correct_answer=array();
 $topic="";
 $status='';
 
@@ -27,9 +27,10 @@ if(isset($_POST['submit'])&&($_POST['submit']=='Update'))
 	$choices = $field['choice'];
 	
 	$j=1;
+	//print_r($field['correct_answer']); exit;
 	foreach($choices as $choice=>$value){
 		if($value!=''){
-			if($field['correct_answer']==$j){
+			if(in_array($j,$field['correct_answer'])){
 				$is_correct=1;
 			}else {
 				$is_correct=0;
@@ -59,7 +60,7 @@ if(isset($_POST['submit'])&&($_POST['submit']=='Update'))
 	}
 	$where=" where question_number ='".$id."'";
 	//echo "Update questions set subject_id='".$field['subject_id']."',topic_id='".$field['topic_id']."',question='".$field['question']."',explanation='".$field['explanation']."',modified_at=NOW(),modified_by=".$_SESSION['id'].",reviewed_by=".$_SESSION['id'].",is_reviewed=".$is_reviewed.",status='".$field['active']."'  $where"; exit;
-	$res2=$sql->query("Update questions set subject_id='".$field['subject_id']."',topic_id='".$field['topic_id']."',question='".mysqli_real_escape_string($sql,$field['question'])."',explanation='".mysqli_real_escape_string($sql,$field['explanation'])."',modified_at=NOW(),modified_by=".$_SESSION['id'].",reviewed_by=".$_SESSION['id'].",is_reviewed=".$is_reviewed.",status='".$field['active']."'  $where");
+	$res2=$sql->query("Update questions set subject_id='".$field['subject_id']."',topic_id='".$field['topic_id']."',question='".mysqli_real_escape_string($sql,$field['question'])."',explanation='".mysqli_real_escape_string($sql,$field['explanation'])."',answer_type=".$field['answer_type'].",modified_at=NOW(),modified_by=".$_SESSION['id'].",reviewed_by=".$_SESSION['id'].",is_reviewed=".$is_reviewed.",status='".$field['active']."'  $where");
 	$msg="update";
 }
 
@@ -108,9 +109,9 @@ if(isset($_POST['submit'])&&$_POST['submit']=="upload"){
 	$spreadsheet = $objReader ->load($fxls);
 	
 	$xls_data = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-	//print_r($xls_data); exit;
-	$subject_name = $xls_data[1]['C']; 
-	$topic_name = $xls_data[2]['C'];
+	
+	$subject_name = $xls_data[1]['D']; 
+	$topic_name = $xls_data[2]['D'];
 	$active=1;
 	$is_reviewed=0;
 	$reviewed_by=0;
@@ -122,6 +123,7 @@ if(isset($_POST['submit'])&&$_POST['submit']=="upload"){
 		$is_reviewed=1;
 		$reviewed_by=$_SESSION['id'];
 	}
+	echo "SELECT s.id as subject_id FROM subject s where s.subject_name='".$subject_name."'"; 
 	$sub=$sql->query("SELECT s.id as subject_id FROM subject s where s.subject_name='".$subject_name."'");
 	$subject=$sub->fetch_assoc();
 	if($sub->num_rows>0){	
@@ -139,17 +141,20 @@ if(isset($_POST['submit'])&&$_POST['submit']=="upload"){
 				if($numCols>0){
 					$question_name=mysqli_real_escape_string($sql,str_replace('"', "'", $xls_data[$x]['A']));
 					$explanation=mysqli_real_escape_string($sql,str_replace('"', "'", $xls_data[$x]['B']));
+					$answer_type=mysqli_real_escape_string($sql,str_replace('"', "'", $xls_data[$x]['C']));
+					$answer_type=($answer_type=="Multi Select")?2:1;
 					if($question_name!=''){
 
-						$res=$sql->query("INSERT INTO `questions` (`subject_id`, `topic_id`, `question`, `explanation`, `created_at`,`created_by`,`modified_by`, `level`, `reviewed_by`,`is_reviewed`,`is_uploaded`,`status`) VALUES ('".$subject['subject_id']."','".$topic['topic_id']."','".mysqli_real_escape_string($sql,$question_name)."','".$explanation."',NOW(),".$_SESSION['id'].",0,0,".$reviewed_by.",".$is_reviewed.",".$is_uploaded.",".$active.")");
+						$res=$sql->query("INSERT INTO `questions` (`subject_id`, `topic_id`, `question`, `explanation`, `answer_type`, `created_at`,`created_by`,`modified_by`, `level`, `reviewed_by`,`is_reviewed`,`is_uploaded`,`status`) VALUES ('".$subject['subject_id']."','".$topic['topic_id']."','".mysqli_real_escape_string($sql,$question_name)."','".$explanation."',".$answer_type.",NOW(),".$_SESSION['id'].",0,0,".$reviewed_by.",".$is_reviewed.",".$is_uploaded.",".$active.")");
 						$question_number=$sql->insert_id;
 						$y=3;
-						$chararray=67;
+						$chararray=68;
 						$cho=1;
 						//print_r($xls_data[$x][chr($chararray)]);echo $numCols;
 						while($y<=$numCols-1&&$y<8) {							
 							if($xls_data[$x][chr($chararray)]!=''){
-								if($xls_data[$x]['H']==$cho){
+								$crt_answer=explode(',',$xls_data[$x]['I']);
+								if(in_array($cho,$crt_answer)){
 									$is_correct=1;
 								}else {
 									$is_correct=0;
@@ -199,7 +204,7 @@ if($action=="edit"){
 	while($choicesarr=$res->fetch_assoc()){
 		$choices[]=$choicesarr;
 		if($choicesarr['is_correct']==1)
-			$correct_answer=$j;
+			$correct_answer[]=$j;
 		$j++;
 	}
 	//print_r($res->fetch_assoc());
@@ -236,11 +241,11 @@ if(isset($_POST['submit'])&&($_POST['submit']=='add'))
 		$reviewed_by=$_SESSION['id'];
 	}
 	
-	$res=$sql->query("INSERT INTO `questions` (`subject_id`, `topic_id`, `question`, `explanation`, `created_at`,`created_by`, `modified_by`, `level`, `reviewed_by`,`is_reviewed`,`status`) VALUES ('".$field['subject_id']."','".$field['topic_id']."','".mysqli_real_escape_string($sql,$field['question'])."','".mysqli_real_escape_string($sql,$field['explanation'])."',NOW(),".$_SESSION['id'].",0,0,".$reviewed_by.",".$is_reviewed.",".$field['active'].")");
+	$res=$sql->query("INSERT INTO `questions` (`subject_id`, `topic_id`, `question`, `explanation`, `answer_type`, `created_at`,`created_by`, `modified_by`, `level`, `reviewed_by`,`is_reviewed`,`status`) VALUES ('".$field['subject_id']."','".$field['topic_id']."','".mysqli_real_escape_string($sql,$field['question'])."','".mysqli_real_escape_string($sql,$field['explanation'])."',".$field['answer_type'].",NOW(),".$_SESSION['id'].",0,0,".$reviewed_by.",".$is_reviewed.",".$field['active'].")");
 	$question_number=$sql->insert_id;
 	$choices = $field['choice'];
 	foreach($choices as $choice=>$value){
-		if($field['correct_answer']==$choice+1){
+		if(in_array($choice+1,$field['correct_answer'])){
 			$is_correct=1;
 		}else {
 			$is_correct=0;
@@ -315,6 +320,19 @@ if($msg!="")
 					         </div> 
 							 							 
 							<? //print_R($choices);?>
+							<div class="form-group">
+					           <label for="inputEmail3" class="col-sm-2 control-label">Select Answer Type 
+					           <span class="required">*</span></label>
+				     		   <div class="col-sm-5">
+								  <?php $i=1; ?>
+								  <select class="form-control" name="answer_type" required id="answer_type">
+									<option value=''>--Please Select Answer type--</option>
+                                  	<option value="1" <?=((isset($question['answer_type'])&&($question['answer_type']==1))?'selected':'')?>>Single Select</option>
+                                  	<option value="2" <?=((isset($question['answer_type'])&&($question['answer_type']==2))?'selected':'')?>>Multi Select</option>
+								  </select>
+					           </div>
+					         </div>
+							 
 							 <div class="form-group">
 					           <label for="inputEmail3" class="col-sm-2 control-label">Choice #1 
 					           <span class="required">*</span></label>
@@ -356,12 +374,12 @@ if($msg!="")
 					           <label for="inputEmail3" class="col-sm-2 control-label">Correct Answer
 					           <span class="required">*</span></label>
 				     		   <div class="col-sm-5">
-                              	  <?php $i=1; ?>
-								  <select class="form-control" name="correct_answer" required>
+                              	  <?php $i=1; //print_R($correct_answer); ?>
+								  <select class="form-control" name="correct_answer[]" <?=(isset($question['answer_type'])&&($question['answer_type']==2))?'multiple':''?> required id="correct_answer">
 									<option value=''>--Please Select Answer--</option>
                                   	<?php 
 									while($i<6){ ?>
-										<option value="<?=$i?>" <?=((isset($correct_answer)&&($i==$correct_answer))?'selected':'')?>><?=$i?></option>
+										<option value="<?=$i?>" <?=((isset($correct_answer)&&in_array($i,$correct_answer))?'selected':'')?>><?=$i?></option>
 									<?php $i++; }
 									?>
                                   </select>
@@ -830,6 +848,15 @@ $(document).on('change', '#subject_id', function(){
 	  }
 	});
 	return true;  
+}); 
+
+$('#answer_type').change(function(){ 
+ if($(this).val()==2){
+	 $('#correct_answer').attr('multiple','multiple');
+ }else{
+	 $('#correct_answer').removeAttr('multiple');
+ }
+ 
 });  
 
 function homepage()

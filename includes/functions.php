@@ -356,4 +356,5 @@ function eventschema($description,$sitename,$logourl,$siteurl,$courseurl,$sdate)
           imagepng($createimage,$output,3);
 		  return $filename;
 	}
+	
 ?>

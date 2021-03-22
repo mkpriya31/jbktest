@@ -56,6 +56,7 @@ if($msg!="")
                                             <tr>
                                                 <th class="text-center">S.No</th>
                                                 <th class="text-center">Email</th>
+												<th class="text-center">Name</th>
                                                 <th class="text-center">Topic</th>
                                                 <th class="text-center">Score</th>
                                                 <th class="text-center">Total</th>  
@@ -76,6 +77,7 @@ if($msg!="")
                                             <tr class="odd gradeX">
                                                 <td class="text-center"><?=$i?></td>
                                                 <td class="text-center"><?php echo $data['email']; ?></td>
+												<td class="text-center"><?php echo $data['name']; ?></td>
 												<?php
 													if($data['is_demand_test']==1){
 														$where="WHERE test_id=".$quizres['test_id'];

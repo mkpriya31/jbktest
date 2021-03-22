@@ -73,10 +73,16 @@ if($_POST)
 				$choices=$sql->query("SELECT * FROM choices $where");
 				$total=$choices->num_rows;
 				$t=0;
+				if($questions['answer_type']==2){
+					$type='type="checkbox"';
+				}
+				else{
+					$type='type="radio"';
+				}
 				while($ch = $choices->fetch_assoc()){
 					$_SESSION['rquestions'][$v]['rchoices'][$t] = $ch;
 					if($ch['text']!=''){
-						$ques.='<li><input name="choice['.$questions['question_number'].']" class="form-check-input" type="radio" value="'.$ch['id'].'"/>'.stripslashes($ch['text']).'</li>';
+						$ques.='<li><input name="choice['.$questions['question_number'].'][]" class="form-check-input" '.$type.' value="'.$ch['id'].'"/>'.stripslashes($ch['text']).'</li>';
 						$t++;
 					}
 				}
@@ -110,25 +116,34 @@ if($_POST)
 					$answer.='<div class="question mb-4"><div class="font-weight-bold text-dark">'.$i.') '.stripslashes($ansquizquestion).'</div><ol class="choices" id="choices">';
 					$qid=$quest['question_number'];
 					$j=1;
+					$correctanswer = array();
+					$youranswer = array();
+					//print_r($_POST['choice'][$qid]);
 					foreach($quest['rchoices'] as $choice){
+						//print_r($_POST['choice'][$qid]);
 						$class='';
 						if($choice['text']!=''){
 							$answer.='<li>'.stripslashes($choice['text']).'</li>';
 						}
-						if(isset($_POST['choice'][$qid])&&($_POST['choice'][$qid]==$choice['id'])){
-							$youranswer=$j;	
-							$class="text-success";
-						}else{
-							$class="text-danger";
+						if(isset($_POST['choice'][$qid])&&(in_array($choice['id'],$_POST['choice'][$qid]))){
+							$youranswer[]=$j;
 						}
+						
 						if($choice['is_correct']==1){
-							$correctanswer=$j;							
+							$correctanswer[]=$j;							
 						}
 						$j++;
 					}
+					$coans =serialize($correctanswer);
+					$yrans =serialize($youranswer);
+					if ($coans == $yrans){
+						$class="text-success";
+					}else{
+						$class="text-danger";
+					}
 					$qno=$quest['question_number'];
-					$result['questions'][$qno]=$youranswer;
-					$answer.='</ol><p class="'.$class.'">Your Answer: '.$youranswer.'</p> <p class="text-success">Correct Answer: '.$correctanswer.'</p> ';
+					$result['questions'][$qno]=implode(",",$youranswer);
+					$answer.='</ol><p class="'.$class.'">Your Answer: '.implode(",",$youranswer).'</p> <p class="text-success">Correct Answer: '.implode(",",$correctanswer).'</p> ';
 					if($quest['explanation']!=''){
 					$answer.='<p class="text-secondary"><span class="font-weight-bold">Explanation: </span> <br/>'.$quest['explanation'].'</p>';
 					}
@@ -138,11 +153,19 @@ if($_POST)
 			}
 		if(isset($_POST['choice'])){
 			$choices=$_POST['choice'];
-			foreach($choices as $ch => $value){
+			foreach($choices as $ch => $ans_array){
+				$answercount=count($ans_array);
+				//print_r($ans_array);
 				$where="WHERE question_number=".$ch." AND is_correct = 1";
 				$correctchoice=$sql->query("SELECT id FROM choices $where");
-				$ans = $correctchoice->fetch_array();
-				if($ans['id']==$value){
+				$cho_array=array();
+				while($cc=$correctchoice->fetch_assoc()){
+					$cho_array[]=$cc['id'];
+				}
+				//print_r($cho_array);
+				$cho =serialize($cho_array);
+				$ans =serialize($ans_array);
+				if ($cho == $ans){
 					++$score;
 				}
 			}
